@@ -32,8 +32,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // TASK 1: User Preferences Functions
 function saveUserPreferences() {
     // TODO: Get values from userNameInput and themeSelect
+    const userName = userNameInput.value;
+    const selectedTheme = themeSelect.value;
+
     // TODO: Save them to localStorage using setItem
+
+    localStorage.setItem('userName', userName);
+    localStorage.setItem('userTheme', selectedTheme);
     // TODO: Apply the theme and show welcome message
+    applyTheme(selectedTheme);
+    showWelcomeMessage(userName);
+    updateLastSaved;
     // HINT: Check the slides for localStorage.setItem() syntax
     
     console.log("Save preferences function called - complete this!");
@@ -45,6 +54,15 @@ function loadUserPreferences() {
     // TODO: Apply saved theme and show welcome message
     // HINT: Remember to check if data exists (not null) before using it
     
+    const userName = localStorage.getItem('userName')
+    const userTheme = localStorage.getItem('userTheme')
+
+    userNameInput.innerHTML = userName;
+    showWelcomeMessage(userName);
+
+    themeSelect.value = userTheme;
+    applyTheme(userTheme);
+
     console.log("Load preferences function called - complete this!");
 }
 
@@ -52,6 +70,7 @@ function applyTheme(theme) {
     // TODO: Set the data-theme attribute on document.body
     // HINT: document.body.setAttribute('data-theme', theme);
     
+    document.body.setAttribute('data-theme', theme);
     console.log("Apply theme function called - complete this!");
 }
 
@@ -59,27 +78,63 @@ function showWelcomeMessage(name) {
     // TODO: Display a personalized welcome message
     // HINT: Use welcomeMessage.textContent or innerHTML
     
+    welcomeMessage.innerHTML = "Welcome Back " + name + "!" 
+
     console.log("Show welcome message function called - complete this!");
 }
 
 // TASK 2: High Scores Functions
 function addScore() {
     // TODO: Get values from gameNameInput and scoreValueInput
+    let gameName = gameNameInput.value;
+    let scoreValue = scoreValueInput.value;
+    
     // TODO: Create a score object with game name, score, and date
+    
+    let score = {
+        game: gameName,
+        score: scoreValue,
+        data: new Date()
+    }
+    
     // TODO: Get existing scores from localStorage (or create empty array)
     // TODO: Add new score to array
     // TODO: Save updated array back to localStorage using JSON.stringify
+
+    if(!localStorage.getItem('gameScores')){
+        let scores = [];
+        scores.push(score);
+        localStorage.setItem('gameScores', JSON.stringify(scores));
+    }else{
+        let scores = JSON.parse(localStorage.getItem('gameScores'));
+        scores.push(score);
+        localStorage.setItem('gameScores', JSON.stringify(scores));
+    }
+
     // TODO: Clear input fields and refresh display
+    gameNameInput.value = '';
+    scoreValueInput.value = '';
+
     // HINT: Use JSON.parse() and JSON.stringify() for arrays
-    
+    loadScores();
     console.log("Add score function called - complete this!");
 }
 
 function loadScores() {
     // TODO: Get scores array from localStorage
     // TODO: Parse the JSON string back to an array
+    let scores = JSON.parse(localStorage.getItem('gameScores'));
+
     // TODO: Sort scores by score value (highest first)
+    scores.sort((a,b) => b.score - a.score);
+
     // TODO: Display top 3 scores in the scoresList
+    const topScores = scores.slice(0,3);
+    for(let i = 0; i < topScores.length; i++){
+        let score = createScoreElement(topScores[i],i);
+        scoresList.appendChild(score);
+    }
+
     // HINT: Remember to handle the case where no scores exist yet
     
     console.log("Load scores function called - complete this!");
